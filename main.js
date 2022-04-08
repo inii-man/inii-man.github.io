@@ -1,10 +1,11 @@
 let circle = document.querySelector("#circle");
-let overCircle = false;
-let pos = {};
 let pts = document.querySelector("#score");
+let gun = document.querySelector('#gun');
+let overCircle = false;
+let position = {};
 let point = 0;
 let timer = 1000;
-let timer2 = 2000;
+let timer2 = 1010;
 let x = 0;
 
 let isMobile = {
@@ -22,11 +23,11 @@ if (isMobile.any()) {
 } else {
     document.body.addEventListener("mousemove", function(event) {
         let img = document.querySelector("#image");
-        pos.y = event.pageY;
-        pos.x = event.pageX;
-        console.log(pos);
-        img.style.top = (pos.y - 40).toString() + "px";
-        img.style.left = (pos.x - 40).toString() + "px";
+        position.y = event.pageY;
+        position.x = event.pageX;
+        console.log(position);
+        img.style.top = (position.y - 40).toString() + "px";
+        img.style.left = (position.x - 40).toString() + "px";
     });
 }
 
@@ -41,7 +42,7 @@ function miss() {
         circle.style.left = Math.random() * 82 + "vw";
     }
     timer = 1000;
-    timer2 = 2000;
+    timer2 = 1010;
 }
 
 function timeUp() {
@@ -49,19 +50,23 @@ function timeUp() {
 }
 
 function hit() {
-    timer = 700;
-    timer2 = 1000;
+    
+    // timer = 100;
+    // timer2 = 900;
     if (isMobile.any()) {
-        circle.style.top = Math.random() * 70 + "vh";
-        circle.style.left = Math.random() * 70 + "vw";
-    } else {
+        circle.style.top = Math.random() * 70+ "vh";
+        circle.style.left = Math.random() * 70+ "vw";
+    } 
+    else {
         circle.style.top = Math.random() * 82 + "vh";
         circle.style.left = Math.random() * 82 + "vw";
     }
     point += Math.round(1);
     pts.textContent = point.toString();
     x++;
+    
   clearTimeout(timeout);
+  
 }
 
 setInterval(timeUp, timer2);
@@ -91,6 +96,8 @@ document.addEventListener("keypress", function(event) {
 });
 circle.addEventListener("click", function() {
     hit();
+    gun.play();
     overCircle = false;
 })
+
 

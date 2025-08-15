@@ -9,7 +9,7 @@
 
   <script>
     document.getElementById("sendRequest").addEventListener("click", async () => {
-      const url = "http://localhost:3000/api/v1/snap/request"; // Ganti dengan endpoint Anda
+      const url = "http://api-payxb.technolabs.my.id/api/v1/snap/request"; // Ganti dengan endpoint Anda
 
       const bodyData = {
         country: ["ID"],
@@ -22,7 +22,7 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-API-Client-ID": "a2V5cHJvZHVjdGlvbjIzMWMxNDQyNjg0NzBhNzkzN2NlOiBjYzBiYmY1YTU5"
+            "X-API-Client-ID": "a2V5cHJvZHVjdGlvbjIyZTVlNDUxMThhNDVhYmJlZmE1OmNjMGJiZjVhNTk="
           },
           body: JSON.stringify(bodyData)
         });

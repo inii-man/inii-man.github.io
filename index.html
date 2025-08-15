@@ -1,44 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>POST Request Example</title>
-</head>
-<body>
-  <button id="sendRequest">Send POST Request</button>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toko Merchant Keren</title>
 
-  <script>
-    document.getElementById("sendRequest").addEventListener("click", async () => {
-      const url = "https://api-payxb.technolabs.my.id/api/v1/snap/request"; // Ganti dengan endpoint Anda
+    <script src="http://localhost:4000/snap.js" defer></script>
 
-      const bodyData = {
-        country: ["ID"],
-        orderid: "xxx",
-        amount: 500000
-      };
-
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-API-Client-ID": "a2V5cHJvZHVjdGlvbjIyZTVlNDUxMThhNDVhYmJlZmE1OmNjMGJiZjVhNTk="
-          },
-          body: JSON.stringify(bodyData)
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        console.log("Response:", result);
-        alert("Request successful! Cek console untuk detail.");
-      } catch (error) {
-        console.error("Error:", error);
-        alert("Request failed! Cek console untuk detail.");
+    <style>
+      body {
+        font-family: sans-serif;
+        display: grid;
+        place-content: center;
+        min-height: 100vh;
+        text-align: center;
       }
-    });
-  </script>
-</body>
+      button {
+        font-size: 1.2rem;
+        padding: 12px 24px;
+        cursor: pointer;
+        border-radius: 8px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+      }
+      button:disabled {
+        background-color: #7a7a7a;
+      }
+      #status {
+        margin-top: 15px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Checkout Pesanan Anda</h1>
+    <p>Total: Rp 250.000</p>
+
+    <button id="pay-button">Bayar Sekarang</button>
+
+    <div id="status"></div>
+
+    <script>
+      const payButton = document.getElementById("pay-button");
+      const statusDiv = document.getElementById("status");
+
+      payButton.addEventListener("click", handlePayment);
+
+      async function handlePayment() {
+        payButton.disabled = true;
+        payButton.textContent = "Memuat...";
+        statusDiv.textContent = "";
+
+        try {
+          const response = await fetch(
+            "https://api-payxb.technolabs.my.id/api/v1/snap/request",
+            {
+              method: "POST",
+              headers: {
+                "X-API-Client-ID":
+                  "a2V5cHJvZHVjdGlvbjI5MTFkMTRkYjc4ZmY0YWJjNmYzOjRlZmY3YzExZjY=",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                country: "ID",
+                orderid: "ORDER-123",
+                amount: 250000,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Gagal mendapatkan data pembayaran dari server.");
+          }
+
+          const data = await response.json();
+
+          if (!data.snapToken) {
+            throw new Error("Snap token tidak ditemukan dalam respons server.");
+          }
+
+          // 3. Panggil snap.pay() dengan token yang diterima
+          window.snap.pay(data, {
+            onSuccess: (result) => {
+              console.log("Pembayaran sukses:", result);
+              statusDiv.style.color = "green";
+              statusDiv.textContent = "Pembayaran Berhasil! Terima kasih.";
+              payButton.textContent = "Pembayaran Berhasil";
+              // Tombol tetap disabled setelah sukses
+            },
+            onPending: (result) => {
+              console.log("Pembayaran pending:", result);
+              statusDiv.style.color = "orange";
+              statusDiv.textContent = "Menunggu pembayaran Anda...";
+            },
+            onError: (error) => {
+              console.error("Pembayaran gagal:", error);
+              statusDiv.style.color = "red";
+              statusDiv.textContent = "Pembayaran Gagal. Silakan coba lagi.";
+              payButton.disabled = false; // Aktifkan lagi tombolnya
+              payButton.textContent = "Bayar Sekarang";
+            },
+            onClose: () => {
+              console.log("Modal pembayaran ditutup.");
+              // Hanya aktifkan kembali tombol jika pembayaran belum berhasil
+              if (payButton.textContent !== "Pembayaran Berhasil") {
+                payButton.disabled = false;
+                payButton.textContent = "Bayar Sekarang";
+              }
+            },
+          });
+        } catch (error) {
+          console.error("Terjadi kesalahan:", error);
+          statusDiv.style.color = "red";
+          statusDiv.textContent = `Error: ${error.message}`;
+          payButton.disabled = false;
+          payButton.textContent = "Bayar Sekarang";
+        }
+      }
+    </script>
+  </body>
 </html>

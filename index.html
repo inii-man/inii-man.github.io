@@ -1,19 +1,44 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>POST Request Example</title>
 </head>
 <body>
-    <h2 id="score">000</h2>
-    <img id="image" src="img/cursor2.png" onkeypress="key()">
-    
-    <img src="img/hitcircle.png" id="circle">
-    <audio src="A.mp3" autoplay loop></audio>
-    <script src="main.js"></script>
-    <script src="B.wav" id="gun"></script>
-</body>
+  <button id="sendRequest">Send POST Request</button>
 
+  <script>
+    document.getElementById("sendRequest").addEventListener("click", async () => {
+      const url = "http://localhost:3000/api/v1/snap/request"; // Ganti dengan endpoint Anda
+
+      const bodyData = {
+        country: ["ID"],
+        orderid: "xxx",
+        amount: 500000
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-API-Client-ID": "a2V5cHJvZHVjdGlvbjIzMWMxNDQyNjg0NzBhNzkzN2NlOiBjYzBiYmY1YTU5"
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Response:", result);
+        alert("Request successful! Cek console untuk detail.");
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Request failed! Cek console untuk detail.");
+      }
+    });
+  </script>
+</body>
 </html>
